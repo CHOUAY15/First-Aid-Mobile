@@ -1,62 +1,80 @@
 package com.example.firstaidfront
 
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.example.firstaidfront.databinding.ActivityTrainingBinding
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.example.firstaidfront.ui.steps.StepFragment1
+import com.example.firstaidfront.ui.steps.StepFragment2
+import com.example.firstaidfront.ui.steps.StepFragment3
 
 class TrainingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrainingBinding
-    private lateinit var youTubePlayerView: YouTubePlayerView
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrainingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Get data from intent
-        val trainingName = intent.getStringExtra("training_name") ?: ""
-        val trainingIcon = intent.getIntExtra("training_icon", R.drawable.ic_healthtest)
-        val videoUrl = intent.getStringExtra("video_url") ?: ""
+        // Setup ViewPager
+        viewPager = binding.viewPager
+        viewPager.adapter = TrainingPagerAdapter(this)
 
-        setupViews(trainingName, trainingIcon, videoUrl)
-        setupVideoPlayer(videoUrl)
-    }
+        // Add page change listener to update progress steps
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateProgressSteps(position)
+            }
+        })
 
-    private fun setupViews(trainingName: String, trainingIcon: Int, videoUrl: String) {
-        binding.toolbarTitle.text = trainingName
-        binding.trainingIcon.setImageResource(trainingIcon)
-
-        binding.buttonNext.setOnClickListener {
-            // Handle next button click
-            Toast.makeText(this, "Next clicked", Toast.LENGTH_SHORT).show()
+        // Setup back button
+        binding.backButton.setOnClickListener {
+            onBackPressed()
         }
     }
 
-    private fun setupVideoPlayer(videoUrl: String) {
-        youTubePlayerView = binding.youtubePlayerView
-        lifecycle.addObserver(youTubePlayerView)
+    private fun updateProgressSteps(currentStep: Int) {
+        val progressViews = listOf(
+            binding.step1Progress,
+            binding.step2Progress,
+            binding.step3Progress
+        )
 
-        youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                val videoId = extractYouTubeVideoId(videoUrl)
-                youTubePlayer.loadVideo(videoId, 0f)
+        progressViews.forEachIndexed { index, view ->
+            view.setBackgroundResource(
+                if (index <= currentStep)
+                    R.drawable.progress_step_active
+                else
+                    R.drawable.progress_step_background
+            )
+        }
+    }
+
+    // Adapter for ViewPager
+    private inner class TrainingPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 3
+
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> StepFragment1.newInstance(1)
+                1 -> StepFragment2.newInstance()
+                2 -> StepFragment3.newInstance()
+                else -> StepFragment1.newInstance(1)
             }
-        })
+        }
     }
 
-    private fun extractYouTubeVideoId(videoUrl: String): String {
-        return videoUrl.substringAfter("youtu.be/")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        youTubePlayerView.release()
+    // Override onBackPressed to provide custom back navigation
+    override fun onBackPressed() {
+        // If not on the first page, move to previous page
+        if (viewPager.currentItem > 0) {
+            viewPager.currentItem = viewPager.currentItem - 1
+        } else {
+            // If on first page, finish the activity
+            super.onBackPressed()
+        }
     }
 }

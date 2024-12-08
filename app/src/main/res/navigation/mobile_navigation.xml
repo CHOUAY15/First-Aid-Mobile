@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_tests"
-        android:name="com.example.firstaidfront.ui.home.HomeFragment"
+        android:name="com.example.firstaidfront.ui.test.TestFragment"
         android:label="Tests"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.firstaidfront.ui.home.HomeFragment"
+        android:name="com.example.firstaidfront.ui.profile.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_profile" />
 </navigation>
