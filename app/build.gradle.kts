@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.logging.interceptor)
     implementation(libs.okhttp)
+    implementation (libs.lottie)
 
     implementation (libs.glide)
     implementation(libs.appauth)

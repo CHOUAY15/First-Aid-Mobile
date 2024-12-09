@@ -12,6 +12,11 @@ object TokenManager {
     private const val KEY_PARTICIPANT_ID = "participant_id"
     private const val KEY_USER_ID = "user_id"
 
+    fun isLoggedIn(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return !prefs.getString(KEY_ACCESS_TOKEN, null).isNullOrEmpty()
+    }
+
     fun saveAuthData(context: Context, authResponse: AuthResponse) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit {
             putString(KEY_ACCESS_TOKEN, authResponse.accessToken)

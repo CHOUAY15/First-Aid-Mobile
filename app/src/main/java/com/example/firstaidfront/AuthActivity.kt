@@ -1,8 +1,11 @@
 package com.example.firstaidfront
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
@@ -17,9 +20,19 @@ import com.example.firstaidfront.config.TokenManager
 import com.example.firstaidfront.data.AuthViewModel
 import kotlinx.coroutines.launch
 import android.webkit.CookieManager
+import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import com.airbnb.lottie.LottieAnimationView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AuthActivity : AppCompatActivity() {
     private val TAG = "AuthActivity"
+
+    private lateinit var loadingMessages: Array<String>
+    private var currentMessageIndex = 0
+    private val messageHandler = Handler(Looper.getMainLooper())
+
     private lateinit var authManager: AuthManager
     private val viewModel: AuthViewModel by viewModels()
     private lateinit var progressBar: ProgressBar
@@ -27,6 +40,13 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
+
+        loadingMessages = arrayOf(
+            "Authenticating...",
+            "Establishing secure connection...",
+            "Almost there...",
+            "Setting up your profile..."
+        )
 
         progressBar = findViewById(R.id.progressBar)
         authManager = AuthManager(this)
@@ -51,26 +71,52 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
+    private fun startLoadingAnimation() {
+        messageHandler.postDelayed(object : Runnable {
+            override fun run() {
+                findViewById<TextView>(R.id.loadingText)?.let { textView ->
+                    textView.animate()
+                        .alpha(0f)
+                        .setDuration(500)
+                        .withEndAction {
+                            currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.size
+                            textView.text = loadingMessages[currentMessageIndex]
+                            textView.animate()
+                                .alpha(1f)
+                                .setDuration(500)
+                                .start()
+                        }
+                        .start()
+                }
+                messageHandler.postDelayed(this, 3000)
+            }
+        }, 3000)
+    }
+
     private fun startAuth() {
         try {
             val authUrl = authManager.getAuthUrl()
             Log.d(TAG, "Starting auth with URL: $authUrl")
 
+            // Enhanced CustomTabs styling
             val customTabsIntent = CustomTabsIntent.Builder()
-                .setToolbarColor(ContextCompat.getColor(this, R.color.primary))
+                .setToolbarColor(ContextCompat.getColor(this, R.color.pink_dark)) // Use pink color
                 .setShowTitle(true)
+                .setNavigationBarColor(ContextCompat.getColor(this, R.color.pink_light))
+                .setNavigationBarDividerColor(ContextCompat.getColor(this, R.color.pink_light))
+                .setStartAnimations(this, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .setExitAnimations(this, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .setUrlBarHidingEnabled(true)
                 .build()
 
-            // Modified flags
+            // Update intent flags
             customTabsIntent.intent.apply {
                 flags = Intent.FLAG_ACTIVITY_NO_HISTORY or
                         Intent.FLAG_ACTIVITY_NEW_TASK or
                         Intent.FLAG_ACTIVITY_SINGLE_TOP
+                // Set app name in recent tasks
+                putExtra(Intent.EXTRA_TITLE, "FirstAid Login")
             }
-
-            // Add logging before launch
-
-            Log.d(TAG, "Package name: ${packageName}")
 
             customTabsIntent.launchUrl(this, Uri.parse(authUrl))
             Log.d(TAG, "Successfully launched auth URL")
@@ -144,11 +190,63 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun startMainActivity() {
-        Log.d(TAG, "Starting MainActivity")
-        startActivity(Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
-        finish()
+        showSuccessAlert("Login Successful!", "Welcome to FirstAid App") {
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+        }
+    }
+
+    private fun showSuccessAlert(title: String, message: String, onDismiss: () -> Unit) {
+        // Hide loading animation and progress bar first
+        findViewById<LottieAnimationView>(R.id.loadingAnimation)?.visibility = View.GONE
+        findViewById<TextView>(R.id.loadingText)?.visibility = View.GONE
+        findViewById<TextView>(R.id.loadingSubtext)?.visibility = View.GONE
+        findViewById<com.google.android.material.progressindicator.LinearProgressIndicator>(R.id.progressBar)?.visibility = View.GONE
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_success, null)
+
+        val dialog = MaterialAlertDialogBuilder(this, R.style.AlertDialogTheme)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Setup dialog views with enhanced styling
+        dialogView.apply {
+            findViewById<LottieAnimationView>(R.id.successAnimation).apply {
+                playAnimation()
+                setAnimation(R.raw.success_animation)
+            }
+
+            findViewById<TextView>(R.id.dialogTitle).apply {
+                text = title
+                setTextColor(ContextCompat.getColor(context, R.color.pink_dark))
+                typeface = ResourcesCompat.getFont(context, R.font.poppins_bold)
+            }
+
+            findViewById<TextView>(R.id.dialogMessage).apply {
+                text = message
+                setTextColor(ContextCompat.getColor(context, R.color.black))
+                typeface = ResourcesCompat.getFont(context, R.font.poppins_regular)
+            }
+
+            findViewById<MaterialButton>(R.id.btnContinue).apply {
+                setBackgroundColor(ContextCompat.getColor(context, R.color.pink_dark))
+                setOnClickListener {
+                    dialog.dismiss()
+                    onDismiss()
+                }
+            }
+        }
+
+        dialog.window?.apply {
+            setBackgroundDrawableResource(R.drawable.dialog_background)
+            // Add animation for dialog
+            attributes?.windowAnimations = R.style.DialogAnimation
+        }
+
+        dialog.show()
     }
 
     private fun showError(message: String) {
@@ -159,11 +257,15 @@ class AuthActivity : AppCompatActivity() {
     private fun showLoading() {
         Log.d(TAG, "Showing loading indicator")
         progressBar.visibility = View.VISIBLE
+        // Add this line to start the loading animation
+        startLoadingAnimation()
     }
 
     private fun hideLoading() {
         Log.d(TAG, "Hiding loading indicator")
         progressBar.visibility = View.GONE
+        // Add this line to stop the loading animation
+        messageHandler.removeCallbacksAndMessages(null)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -187,7 +289,8 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy called")
+        // Add this line to clean up the message handler
+        messageHandler.removeCallbacksAndMessages(null)
         authManager.dispose()
     }
 }
