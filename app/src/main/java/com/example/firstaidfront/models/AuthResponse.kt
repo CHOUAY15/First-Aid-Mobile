@@ -3,12 +3,13 @@ package com.example.firstaidfront.models
 import com.google.gson.annotations.SerializedName
 
 data class AuthResponse(
-    @SerializedName("access_token")
+    // Change these annotations to match the exact keys from JSON
+    @SerializedName("accessToken")
     val accessToken: String,
-    @SerializedName("refresh_token")
+    @SerializedName("refreshToken")
     val refreshToken: String,
-    @SerializedName("participant_id")
+    @SerializedName("participantId")
     val participantId: Int,
-    @SerializedName("user_id")
+    @SerializedName("userId")
     val userId: String
 )

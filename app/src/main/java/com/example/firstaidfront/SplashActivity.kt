@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
         // Simulating a loading process with a delay
         Handler(Looper.getMainLooper()).postDelayed({
             // Navigate to KeycloakLoginActivity
-            startActivity(Intent(this, KeycloakLoginActivity::class.java))
+            startActivity(Intent(this, AuthActivity::class.java))
             finish()
         }, 3000) // 3 seconds delay
     }

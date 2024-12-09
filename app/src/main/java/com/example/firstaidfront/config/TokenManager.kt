@@ -1,6 +1,7 @@
 package com.example.firstaidfront.config
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.edit
 import com.example.firstaidfront.models.AuthResponse
 
@@ -18,6 +19,7 @@ object TokenManager {
             putInt(KEY_PARTICIPANT_ID, authResponse.participantId)
             putString(KEY_USER_ID, authResponse.userId)
         }
+        Log.d("AuthData", "Saved Auth Data: AccessToken=${authResponse.accessToken}, RefreshToken=${authResponse.refreshToken}, ParticipantId=${authResponse.participantId}, UserId=${authResponse.userId}")
     }
 
     fun getAccessToken(context: Context): String? {

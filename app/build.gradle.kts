@@ -15,7 +15,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders["appAuthRedirectScheme"] = "com.example.firstaidfront"
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.firstaid.app"
     }
 
     buildTypes {
@@ -42,9 +42,12 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation (libs.androidx.browser)
+    implementation(libs.logging.interceptor)
+    implementation(libs.okhttp)
+
     implementation (libs.glide)
-    implementation (libs.appauth)
+    implementation(libs.appauth)
+    implementation(libs.androidx.browser)
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.androidx.appcompat)
