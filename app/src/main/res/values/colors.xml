@@ -29,4 +29,5 @@
     <!-- Gradient Colors -->
     <color name="gradient_start">#FF1493</color>
     <color name="gradient_end">#C71585</color>
+
 </resources>

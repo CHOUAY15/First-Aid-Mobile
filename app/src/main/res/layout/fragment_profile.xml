@@ -23,6 +23,30 @@
                 android:orientation="vertical"
                 android:padding="24dp"
                 android:gravity="center">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/logoutButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_gravity="end"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        app:icon="@drawable/logout"
+                        app:iconSize="24dp"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="@color/pink_dark"
+                        app:strokeColor="@color/pink_light"
+                        app:cornerRadius="24dp" />
+                </FrameLayout>
 
                 <FrameLayout
                     android:layout_width="120dp"
@@ -32,6 +56,8 @@
                         android:id="@+id/profileImage"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:src="@drawable/profile"
+
                         android:scaleType="centerCrop"
                         app:shapeAppearanceOverlay="@style/CircleImageView" />
 
@@ -65,10 +91,12 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -147,12 +175,13 @@
 
                         <ImageButton
                             android:id="@+id/editFirstName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="8dp"
-                            android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_edit"
+                        android:scaleType="centerInside"
+                        app:tint="@color/pink_dark" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -207,12 +236,13 @@
 
                         <ImageButton
                             android:id="@+id/editLastName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="8dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:scaleType="centerInside"
+                            app:tint="@color/pink_dark"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -267,12 +297,13 @@
 
                         <ImageButton
                             android:id="@+id/editUsername"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="8dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:scaleType="centerInside"
+                            app:tint="@color/pink_dark" />
                     </LinearLayout>
 
                     <!-- Last Name (Similar structure) -->
@@ -354,12 +385,13 @@
 
                         <ImageButton
                             android:id="@+id/editEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="8dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:scaleType="centerInside"
+                            app:tint="@color/pink_dark" />
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -413,12 +445,13 @@
 
                         <ImageButton
                             android:id="@+id/editPhone"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="8dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:scaleType="centerInside"
+                            app:tint="@color/pink_dark" />
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -472,12 +505,13 @@
 
                         <ImageButton
                             android:id="@+id/editAddress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="8dp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/gray" />
+                            android:scaleType="centerInside"
+                            app:tint="@color/pink_dark" />
                     </LinearLayout>
 
 
@@ -511,6 +545,21 @@
                     android:text="Save"
                     android:textColor="@color/white" />
             </LinearLayout>
+            <!-- Add this after the editActionsLayout -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp">
+
+                <!-- Replace the current logout button with this -->
+
+
+            </FrameLayout>
+
+            <!-- Add a spacer at the bottom for better padding -->
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -49,12 +49,7 @@ class StepFragment1 : Fragment() {
 
     private fun getVideoIdForStep(): String {
         // Add logic to return different video IDs based on step number
-        return when(stepNumber) {
-            1 -> "VIDEO_ID_1"
-            2 -> "VIDEO_ID_2"
-            3 -> "VIDEO_ID_3"
-            else -> "VIDEO_ID_1"
-        }
+        return "xfFf3-8sRAA"
     }
 
     private fun setupYouTubePlayer(videoId: String) {
