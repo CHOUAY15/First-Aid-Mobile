@@ -1,6 +1,6 @@
 package com.example.firstaidfront
 
-import android.app.AlertDialog
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.activity.viewModels
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
@@ -34,7 +34,7 @@ class AuthActivity : AppCompatActivity() {
     private val messageHandler = Handler(Looper.getMainLooper())
 
     private lateinit var authManager: AuthManager
-    private val viewModel: AuthViewModel by viewModels()
+    private val viewModel=AuthViewModel(this)
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {

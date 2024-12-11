@@ -78,6 +78,95 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/arCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/gold_gradient_background">
+
+                    <!-- Top section with icon and title -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="20dp"
+                        android:gravity="center_vertical">
+
+                        <FrameLayout
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/circle_gold_background"
+                            android:padding="12dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ar"
+                                app:tint="#FFD700"/>
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Try AR"
+                                android:textSize="20sp"
+                                android:textColor="#FFD700"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/poppins_bold"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="This training supports AR functionality"
+                                android:textSize="14sp"
+                                android:textColor="#FFF8DC"
+                                android:fontFamily="@font/poppins_regular"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_arrow_forward"
+                            app:tint="#FFD700"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#4DFFD700"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <!-- Bottom section with additional info -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Experience hands-on CPR training in augmented reality"
+                        android:textColor="#FFF8DC"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_regular"
+                        android:padding="16dp"/>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
             <!-- Goals Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -98,12 +187,11 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
-
                     <TextView
+                        android:id="@+id/goalsDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="This training is for developing essential first aid skills that can help save lives in emergency situations. You will learn proper techniques and best practices for responding to various medical emergencies."
                         android:textSize="14sp"
                         android:textColor="#757575"/>
                 </LinearLayout>

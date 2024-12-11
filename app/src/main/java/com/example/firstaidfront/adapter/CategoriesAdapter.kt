@@ -38,7 +38,7 @@ class CategoriesAdapter(private val onItemClick: (Category) -> Unit) : RecyclerV
 
         fun bind(category: Category) {
             iconView.setImageResource(category.iconResId)
-            nameView.text = category.name
+            nameView.text = category.title
             itemView.setOnClickListener { onItemClick(category) }
         }
     }

@@ -13,6 +13,10 @@ class StepFragment1 : Fragment() {
     private var _binding: FragmentStep1Binding? = null
     private val binding get() = _binding!!
     private var stepNumber: Int = 1
+    private var trainingName: String? = null
+    private var videoUrl: String? = null
+    private var goals: String? = null
+
 
     companion object {
         private const val ARG_STEP_NUMBER = "step_number"
@@ -30,6 +34,7 @@ class StepFragment1 : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         stepNumber = arguments?.getInt(ARG_STEP_NUMBER, 1) ?: 1
+        trainingName = activity?.intent?.getStringExtra("training_name")
     }
 
     override fun onCreateView(
@@ -45,11 +50,30 @@ class StepFragment1 : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupYouTubePlayer(getVideoIdForStep())
         lifecycle.addObserver(binding.youtubePlayerView)
+
+        // Show AR card only for CPR training
+        if (trainingName == "CPR") {
+            binding.arCard.visibility = View.VISIBLE
+            setupArCard()
+        } else {
+            binding.arCard.visibility = View.GONE
+        }
+    }
+
+    private fun setupArCard() {
+        binding.arCard.setOnClickListener {
+            // Handle AR feature launch here
+            // For example, launch AR activity or show AR dialog
+        }
     }
 
     private fun getVideoIdForStep(): String {
-        // Add logic to return different video IDs based on step number
-        return "xfFf3-8sRAA"
+        return when (trainingName) {
+            "CPR" -> "MKZclIAJV_A"
+            "First Aid" -> "xfFf3-8sRAA"
+            "Emergency" -> "different_video_id"
+            else -> "xfFf3-8sRAA"
+        }
     }
 
     private fun setupYouTubePlayer(videoId: String) {

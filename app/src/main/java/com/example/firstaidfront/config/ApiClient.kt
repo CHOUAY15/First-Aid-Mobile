@@ -1,5 +1,6 @@
 package com.example.firstaidfront.config
 
+import android.content.Context
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -13,29 +14,24 @@ object ApiClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .retryOnConnectionFailure(true)
-        .addInterceptor(loggingInterceptor)  // Add logging for debugging
-//        .addInterceptor(AuthInterceptor())  // Keeping your commented interceptor
-        .build()
+    fun createClient(context: Context): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(AuthInterceptor(context))
+            .build()
+    }
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    fun <T> create(serviceClass: Class<T>): T = retrofit.create(serviceClass)
-
-    // Add a function to create a custom client with different base URL if needed
-    fun createCustomClient(baseUrl: String): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
+    fun <T> create(serviceClass: Class<T>, context: Context): T {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(createClient(context))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+        return retrofit.create(serviceClass)
     }
 }

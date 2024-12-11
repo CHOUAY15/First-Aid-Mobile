@@ -199,23 +199,24 @@
                         android:layout_height="64dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_certif"
-                        app:tint="@color/gold" />
+                        app:tint="@color/pink_dark" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
+                        android:fontFamily="@font/poppins_bold"
                         android:text="Congratulations!"
-                        android:textColor="@color/black"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/pink_dark"
+                        android:textSize="24sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="8dp"
+                        android:fontFamily="@font/poppins_regular"
                         android:gravity="center"
                         android:text="You have successfully completed the course and earned your certificate"
                         android:textColor="@color/gray"
@@ -223,16 +224,19 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/downloadCertificateButton"
-                        android:layout_width="384dp"
-                        android:layout_height="55dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
                         android:layout_marginTop="24dp"
-
-                        android:background="@color/pink_dark"
-                        android:paddingVertical="12dp"
+                        android:backgroundTint="@color/pink_light"
+                        android:fontFamily="@font/poppins_medium"
                         android:text="Download Certificate"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_download" />
+                        app:elevation="4dp"
+
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/white" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

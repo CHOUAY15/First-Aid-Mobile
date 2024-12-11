@@ -1,7 +1,15 @@
 package com.example.firstaidfront.models
 
+import com.example.firstaidfront.R
+
 data class Category(
-    var name: String = "",
-    var iconResId: Int = 0, // Par défaut, la ressource sera 0
-    var videoUrl: String = "xfFf3-8sRAA"
+    val id: Int = 0,
+    val iconPath: String = "",
+    val title: String = "",
+    val goals: String = "",
+    val urlYtb: String = "",
+    val instructions: List<String> = emptyList(),
+    val courses: List<CourseItem> = emptyList(),
+    val quizzes: List<Quiz> = emptyList(),
+    var iconResId: Int = R.drawable.ic_healthtest // For internal use
 )
