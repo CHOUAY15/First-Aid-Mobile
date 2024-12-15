@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.firstaidfront.TrainingActivity
 import com.example.firstaidfront.adapter.CategoriesAdapter
 import com.example.firstaidfront.adapter.ProgressAdapter
+import com.example.firstaidfront.config.TokenManager
 import com.example.firstaidfront.databinding.FragmentHomeBinding
 
 import kotlinx.coroutines.launch
@@ -46,12 +47,26 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupUserName()
         setupCategoriesRecyclerView()
         setupProgressRecyclerView()
         setupObservers()
 
         viewModel.loadTrainings()
     }
+
+    private fun setupUserName() {
+        val fullName = TokenManager.getFullName(requireContext())
+        binding.userName.text = fullName.ifEmpty { "Welcome" }
+
+        // Fetch latest participant info if needed
+        viewLifecycleOwner.lifecycleScope.launch {
+            TokenManager.fetchAndSaveParticipantInfo(requireContext())
+            // Update name after fetching
+            binding.userName.text = TokenManager.getFullName(requireContext())
+        }
+    }
+
 
     private fun setupCategoriesRecyclerView() {
         categoriesAdapter = CategoriesAdapter { category ->
@@ -61,6 +76,9 @@ class HomeFragment : Fragment() {
                 putExtra("video_url", category.urlYtb)
                 putExtra("goals", category.goals)
                 putExtra("training_id", category.id)
+                putStringArrayListExtra("instructions", ArrayList(category.instructions))
+                putParcelableArrayListExtra("courses", ArrayList(category.courses))
+                putParcelableArrayListExtra("quizzes", ArrayList(category.quizzes))
             }
             startActivity(intent)
         }

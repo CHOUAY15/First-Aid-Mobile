@@ -1,30 +1,47 @@
 package com.example.firstaidfront.adapter
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.firstaidfront.R
+import com.example.firstaidfront.config.ApiClient
 import com.example.firstaidfront.databinding.ItemCourseContentBinding
 import com.example.firstaidfront.models.CourseItem
 
-
-class CourseItemAdapter(private val items: List<CourseItem>) :
+class CourseItemAdapter(private var items: List<CourseItem>) :
     RecyclerView.Adapter<CourseItemAdapter.CourseItemViewHolder>() {
 
     inner class CourseItemViewHolder(private val binding: ItemCourseContentBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: CourseItem) {
-            binding.tvTitle.text = item.title
+            binding.tvTitle.text = item.name
             binding.tvDescription.text = item.description
 
-            if (item.imageResourceId != null) {
-                binding.ivItemImage.visibility = View.VISIBLE
-                binding.ivItemImage.setImageResource(item.imageResourceId)
-            } else {
+            // If urlImage is null, update layout to remove image space
+            if (item.urlImage == null) {
+                binding.ivItemImage.updateLayoutParams {
+                    height = 0
+                }
                 binding.ivItemImage.visibility = View.GONE
+            } else {
+                // Reset layout params and visibility for images that exist
+                binding.ivItemImage.updateLayoutParams {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+                binding.ivItemImage.visibility = View.VISIBLE
+
+                // Load the image
+                val fullImageUrl = "${ApiClient.BASE_URL}TRAINING-SERVICE/api/images/${item.urlImage}"
+                Glide.with(itemView.context)
+                    .load(fullImageUrl)
+                    .placeholder(R.drawable.ic_healthtest)
+                    .error(R.drawable.ic_healthtest)
+                    .centerCrop()
+                    .into(binding.ivItemImage)
             }
         }
     }
@@ -43,4 +60,9 @@ class CourseItemAdapter(private val items: List<CourseItem>) :
     }
 
     override fun getItemCount() = items.size
+
+    fun updateItems(newItems: List<CourseItem>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 }

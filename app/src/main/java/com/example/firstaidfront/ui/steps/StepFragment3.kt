@@ -5,71 +5,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.firstaidfront.R
+import com.example.firstaidfront.api.ParticipantService
+import com.example.firstaidfront.config.ApiClient
+import com.example.firstaidfront.config.TokenManager
 import com.example.firstaidfront.databinding.FragmentStep3Binding
-import com.example.firstaidfront.models.TestQuestion
+import com.example.firstaidfront.models.ParticipantAnswer
+import com.example.firstaidfront.models.Quiz
+import com.example.firstaidfront.models.TestResult
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class StepFragment3 : Fragment() {
     private var _binding: FragmentStep3Binding? = null
     private val binding get() = _binding!!
 
     private var currentQuestionIndex = 0
-    private val questions = listOf(
-        TestQuestion(
-            1,
-            "What is the first step in assessing an emergency situation?",
-            listOf(
-                "Start CPR immediately",
-                "Check for scene safety",
-                "Call emergency services",
-                "Check for breathing"
-            )
-        ),
-        TestQuestion(
-            2,
-            "What is the correct compression to breath ratio in adult CPR?",
-            listOf(
-                "15:2",
-                "30:2",
-                "20:2",
-                "10:2"
-            )
-        ),
-        TestQuestion(
-            3,
-            "Which of the following is a sign of cardiac arrest?",
-            listOf(
-                "Sudden collapse",
-                "Severe headache",
-                "Nausea",
-                "Dizziness"
-            )
-        ),
-        TestQuestion(
-            4,
-            "How long should you check for breathing in an unconscious person?",
-            listOf(
-                "5 seconds",
-                "10 seconds",
-                "15 seconds",
-                "20 seconds"
-            )
-        ),
-        TestQuestion(
-            5,
-            "What is the correct position for recovery position?",
-            listOf(
-                "On their back",
-                "On their side with top leg bent",
-                "On their stomach",
-                "Sitting upright"
-            )
-        )
-    )
+    private var quizzes: List<Quiz> = emptyList()
+    private val userAnswers = mutableMapOf<Int, Int>()
+    private var trainingId: Int = -1
+    private lateinit var participantService: ParticipantService// QuizId to selected answer index
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        participantService = ApiClient.create(ParticipantService::class.java, requireContext())
+        activity?.intent?.let { intent ->
+            trainingId = intent.getIntExtra("training_id", -1)
+            intent.getParcelableArrayListExtra<Quiz>("quizzes")?.let {
+                quizzes = it.toList()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,8 +53,12 @@ class StepFragment3 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAnimation()
-        displayQuestion(currentQuestionIndex)
-        setupSubmitButton()
+        if (quizzes.isNotEmpty()) {
+            displayQuestion(currentQuestionIndex)
+            setupSubmitButton()
+        } else {
+            showNoQuizzesMessage()
+        }
     }
 
     private fun setupAnimation() {
@@ -92,14 +66,21 @@ class StepFragment3 : Fragment() {
         binding.testAnimation.playAnimation()
     }
 
+    private fun showNoQuizzesMessage() {
+        binding.questionCard.visibility = View.GONE
+        binding.optionsGroup.visibility = View.GONE
+        binding.submitButton.visibility = View.GONE
+        // You might want to add a TextView to show this message in your layout
+    }
+
     private fun displayQuestion(index: Int) {
-        val question = questions[index]
-        binding.questionNumber.text = "Question ${index + 1}/${questions.size}"
-        binding.questionText.text = question.question
+        val quiz = quizzes[index]
+        binding.questionNumber.text = "Question ${index + 1}/${quizzes.size}"
+        binding.questionText.text = quiz.question
 
         binding.optionsGroup.removeAllViews()
 
-        question.options.forEachIndexed { optionIndex, optionText ->
+        quiz.options.forEachIndexed { optionIndex, optionText ->
             val optionView = layoutInflater.inflate(
                 R.layout.item_test_option,
                 binding.optionsGroup,
@@ -108,24 +89,18 @@ class StepFragment3 : Fragment() {
 
             val radioButton = optionView.findViewById<RadioButton>(R.id.radioButton)
             radioButton.text = optionText
-            radioButton.isChecked = question.selectedAnswer == optionIndex
+            radioButton.isChecked = userAnswers[quiz.id] == optionIndex
 
-            // Change this part to handle both the card and radio button clicks
             val clickListener = View.OnClickListener {
-                // Uncheck all radio buttons first
-                for (i in 0 until binding.optionsGroup.childCount) {
-                    val cardView = binding.optionsGroup.getChildAt(i) as MaterialCardView
-                    cardView.findViewById<RadioButton>(R.id.radioButton).isChecked = false
+                handleOptionSelection(quiz.id, optionIndex)
+
+                // Update radio button states
+                binding.optionsGroup.children.forEach { child ->
+                    (child as? MaterialCardView)?.findViewById<RadioButton>(R.id.radioButton)?.isChecked = false
                 }
-
-                // Check the selected radio button
                 radioButton.isChecked = true
-
-                // Save the answer and move to next question
-                handleOptionSelection(optionIndex)
             }
 
-            // Set click listeners for both the card and the radio button
             optionView.setOnClickListener(clickListener)
             radioButton.setOnClickListener(clickListener)
 
@@ -133,27 +108,23 @@ class StepFragment3 : Fragment() {
         }
 
         binding.submitButton.visibility =
-            if (index == questions.size - 1) View.VISIBLE else View.GONE
+            if (index == quizzes.size - 1) View.VISIBLE else View.GONE
     }
 
-    private fun handleOptionSelection(selectedIndex: Int) {
-        // Save the selected answer
-        questions[currentQuestionIndex].selectedAnswer = selectedIndex
+    private fun handleOptionSelection(quizId: Int, selectedIndex: Int) {
+        userAnswers[quizId] = selectedIndex
 
-        // Add a small delay before moving to the next question
         view?.postDelayed({
-            if (currentQuestionIndex < questions.size - 1) {
+            if (currentQuestionIndex < quizzes.size - 1) {
                 currentQuestionIndex++
                 displayQuestion(currentQuestionIndex)
             }
-        }, 300) // 300ms delay for better UX
+        }, 300)
     }
 
     private fun setupSubmitButton() {
         binding.submitButton.setOnClickListener {
-            val unansweredQuestions = questions.count { it.selectedAnswer == null }
-
-            if (unansweredQuestions > 0) {
+            if (userAnswers.size < quizzes.size) {
                 Toast.makeText(
                     context,
                     "Please answer all questions before submitting",
@@ -162,23 +133,74 @@ class StepFragment3 : Fragment() {
                 return@setOnClickListener
             }
 
-            // Calculate score
-            val score = questions.count {
-                it.selectedAnswer == 1 // Assuming index 1 is correct for all questions
-            }
-
-            showResultDialog(score)
+            submitTest()
         }
     }
 
-    private fun showResultDialog(score: Int) {
-        val percentage = (score.toFloat() / questions.size) * 100
+    private fun submitTest() {
+        val participantId = TokenManager.getParticipantId(requireContext())
+        if (participantId == null || trainingId == -1) {
+            Toast.makeText(context, "Error: Invalid session", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        val dialogView = layoutInflater.inflate(R.layout.dialog_test_result, null)
-        // Setup dialog view...
+        // Show loading state
+        binding.submitButton.isEnabled = false
+        binding.testAnimation.pauseAnimation()
 
-        // Show dialog with score and next steps
-        // You can create a custom dialog layout and implementation
+        // Convert answers to API format
+        val answers = userAnswers.map { (quizId, selectedAnswer) ->
+            ParticipantAnswer(quizId, selectedAnswer)
+        }
+
+        // Submit test
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val result = participantService.submitTest(participantId, trainingId, answers)
+                showResultDialog(result)
+            } catch (e: Exception) {
+                Toast.makeText(
+                    context,
+                    "Error submitting test: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                binding.submitButton.isEnabled = true
+                binding.testAnimation.resumeAnimation()
+            }
+        }
+    }
+
+    private fun calculateScore(): Int {
+        return quizzes.count { quiz ->
+            userAnswers[quiz.id] == quiz.correctAnswerIndex
+        }
+    }
+
+    private fun showResultDialog(result: TestResult) {
+        val message = buildString {
+            append("Score: ${String.format("%.1f", result.score)}%\n\n")
+
+            if (result.passed) {
+                append("Congratulations! You've passed the test!\n")
+                append("A certificate has been generated for you.")
+            } else {
+                append("You didn't pass this time.\n")
+                append("Keep practicing and try again!")
+            }
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(if (result.passed) "Certification Achieved!" else "Test Results")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                if (result.passed) {
+                    // Navigate back or to certificate view
+                    activity?.finish()
+                }
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onDestroyView() {

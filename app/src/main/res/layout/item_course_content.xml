@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp">
+
+   >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +20,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:text="Section Title"/>
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/tvDescription"
@@ -29,8 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="14sp"
-            android:textColor="#757575"
-            android:text="Description of the section"/>
+            android:textColor="#757575"/>
 
         <ImageView
             android:id="@+id/ivItemImage"
@@ -38,7 +36,6 @@
             android:layout_height="200dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:visibility="gone"/>
+            android:adjustViewBounds="true"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

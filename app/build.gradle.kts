@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.okhttp)
     implementation (libs.lottie)
+    implementation(libs.glide.v4160)
+    annotationProcessor(libs.compiler)
 
     implementation (libs.glide)
     implementation(libs.appauth)
